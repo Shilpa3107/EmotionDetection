@@ -2,13 +2,18 @@ import cv2
 import joblib
 import numpy as np
 
-model = joblib.load('emotion_model.pkl')
+# Load the model and label encoder correctly
+data = joblib.load('emotion_model.pkl')
+model = data['model']
+label_encoder = data['label_encoder']
 
 def predict_emotion(gray_img):
     img = cv2.resize(gray_img, (48, 48)).flatten().reshape(1, -1)
     prediction = model.predict(img)
-    return prediction[0]
+    emotion_label = label_encoder.inverse_transform(prediction)[0]
+    return emotion_label
 
+# Start webcam
 cap = cv2.VideoCapture(0)
 
 while True:
