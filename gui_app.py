@@ -5,12 +5,17 @@ from PIL import Image, ImageTk
 import numpy as np
 import joblib
 
-model = joblib.load('emotion_model.pkl')
+# Load model and label encoder from the saved dictionary
+model_data = joblib.load('emotion_model.pkl')
+model = model_data['model']
+label_encoder = model_data['label_encoder']
 
 def predict_image(img_path):
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     img = cv2.resize(img, (48, 48)).flatten().reshape(1, -1)
-    return model.predict(img)[0]
+    prediction = model.predict(img)[0]
+    emotion = label_encoder.inverse_transform([prediction])[0]
+    return emotion
 
 def upload_image():
     file_path = filedialog.askopenfilename()
